@@ -1,0 +1,103 @@
+Sub Hard()
+    ' Declare Ticker,  vol variables
+    Dim tickerValue As String
+    Dim volValue As Double
+    ' nextTicker =peek into next ticker to see if there is a change
+    Dim nextTicker As String
+    ' totalVol = stores the total stock volume for each current ticker
+    Dim totalVol As Double
+    ' iRow = the row index at Column I (Ticker)
+    Dim iRow As Double
+    ' lastRow = the last dataset in row index @ Col A
+    Dim lastRow As Double
+    Dim yearOpen As Double
+    Dim yearClose As Double
+    Dim percentMin As Double
+    Dim percentMax As Double
+    Dim totalVolMax As Double
+    Dim tickerPercectMin As String
+    Dim tickerPercentMax As String
+    Dim tickerTotalVolMax As String
+    
+    ' Print headers
+    Range("I1").Value = "Ticker"
+    Range("J1").Value = "Yearly Change"
+    Range("K1").Value = "Percent Change"
+    Range("L1").Value = "Total Stock Volume"
+    ' Initialize first ticker data
+    yearOpen = Range("C2")
+    percentMin = 100
+    percentMax = -100
+    totalVolMax = -1
+
+    ' Parse through the data
+    iRow = 2
+    totalVol = 0
+    lastRow = Cells(Rows.Count, 1).End(xlUp).Row
+    For i = 2 To lastRow
+        ' initialize values
+        tickerValue = Cells(i, 1).Value
+        nextTicker = Cells(i + 1, 1).Value
+        volValue = Cells(i, 7).Value
+        ' Add volValue to total
+        totalVol = totalVol + volValue
+        
+        ' Print Ticker values & reset values for next ticker
+        If (tickerValue <> nextTicker) Then
+            '  Print Ticker & intiialize format
+            yearClose = Cells(i, 6).Value
+            Cells(iRow, 9).Value = tickerValue
+            Cells(iRow, 10).Value = yearClose - yearOpen
+            Cells(iRow, 10).NumberFormat = "0.000000000"
+            If (Cells(iRow, 10).Value >= 0) Then
+                Cells(iRow, 10).Interior.ColorIndex = 4
+            Else
+                Cells(iRow, 10).Interior.ColorIndex = 3
+            End If
+            
+            Cells(iRow, 11).NumberFormat = "0.00%"
+            If (yearOpen <> 0) Then
+                Cells(iRow, 11).Value = (yearClose - yearOpen) / yearOpen
+            Else
+                Cells(iRow, 11).Value = 0
+            End If
+            
+            Cells(iRow, 12).Value = totalVol
+            ' Check/Update percent Min/Max, totalVolMax
+            If (Cells(iRow, 11).Value > percentMax) Then
+                percentMax = Cells(iRow, 11).Value
+                tickerPercentMax = tickerValue
+            ElseIf (Cells(iRow, 11).Value < percentMin) Then
+                percentMin = Cells(iRow, 11).Value
+                tickerPercentMin = tickerValue
+            End If
+            If (totalVol > totalVolMax) Then
+                totalVolMax = totalVol
+                tickerTotalVolMax = tickerValue
+            End If
+            
+            ' Increment iRow for next ticker
+            iRow = iRow + 1
+            ' Reset values
+            yearOpen = Cells(i + 1, 3)
+            totalVol = 0
+        End If
+              
+    Next i
+    
+    ' Print percent Min/Max, total Volume Max, Ticker
+    Range("O2").Value = "Greatest % Increase"
+    Range("O3").Value = "Greatest % Decrease"
+    Range("O4").Value = "Greatest Total Volume"
+    Range("P1").Value = "Ticker"
+    Range("P2").Value = tickerPercentMax
+    Range("P3").Value = tickerPercentMin
+    Range("P4").Value = tickerTotalVolMax
+    Range("Q1").Value = "Value"
+    Range("Q2").NumberFormat = "0.00%"
+    Range("Q2").Value = percentMax
+    Range("Q3").NumberFormat = "0.00%"
+    Range("Q3").Value = percentMin
+    Range("Q4").Value = totalVolMax
+    
+End Sub

@@ -1,0 +1,42 @@
+Sub Easy()
+    ' Declare Ticker,  vol variables
+    Dim tickerValue As String
+    Dim volValue As Double
+    ' nextTicker =peek into next ticker to see if there is a change
+    Dim nextTicker As String
+    ' totalVol = stores the total stock volume for each current ticker
+    Dim totalVol As Double
+    ' iRow = the row index at Column I (Ticker)
+    Dim iRow As Double
+    ' lastRow = the last dataset in row index @ Col A
+    Dim lastRow As Double
+    ' Print headers
+    Range("I1").Value = "Ticker"
+    Range("J1").Value = "Total Stock Volume"
+    
+    ' Parse through the data
+    iRow = 2
+    totalVol = 0
+    lastRow = Cells(Rows.Count, 1).End(xlUp).Row
+    For i = 2 To lastRow
+        ' initialize values
+        tickerValue = Cells(i, 1).Value
+        nextTicker = Cells(i + 1, 1).Value
+        volValue = Cells(i, 7).Value
+        ' Add volValue to total
+        totalVol = totalVol + volValue
+        
+        ' Print Ticker values & reset values for next ticker
+        If (tickerValue <> nextTicker) Then
+            ' Print Ticker
+            Cells(iRow, 9).Value = tickerValue
+            Cells(iRow, 10).Value = totalVol
+            ' Increment iRow for next ticker
+            iRow = iRow + 1
+            ' Reset values
+            totalVol = 0
+        End If
+    Next i
+    
+End Sub
+

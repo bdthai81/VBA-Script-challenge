@@ -1,0 +1,66 @@
+Sub Moderate()
+    ' Declare Ticker,  vol variables
+    Dim tickerValue As String
+    Dim volValue As Double
+    ' nextTicker =peek into next ticker to see if there is a change
+    Dim nextTicker As String
+    ' totalVol = stores the total stock volume for each current ticker
+    Dim totalVol As Double
+    ' iRow = the row index at Column I (Ticker)
+    Dim iRow As Double
+    ' lastRow = the last dataset in row index @ Col A
+    Dim lastRow As Double
+    Dim yearOpen As Double
+    Dim yearClose As Double
+    
+    ' Print headers
+    Range("I1").Value = "Ticker"
+    Range("J1").Value = "Yearly Change"
+    Range("K1").Value = "Percent Change"
+    Range("L1").Value = "Total Stock Volume"
+    ' Initialize first ticker data
+    yearOpen = Range("C2")
+    
+    ' Parse through the data
+    iRow = 2
+    totalVol = 0
+    lastRow = Cells(Rows.Count, 1).End(xlUp).Row
+    For i = 2 To lastRow
+        ' initialize values
+        tickerValue = Cells(i, 1).Value
+        nextTicker = Cells(i + 1, 1).Value
+        volValue = Cells(i, 7).Value
+        ' Add volValue to total
+        totalVol = totalVol + volValue
+        
+        ' Print Ticker values & reset values for next ticker
+        If (tickerValue <> nextTicker) Then
+            ' Print Ticker & intiialize format
+            yearClose = Cells(i, 6).Value
+            Cells(iRow, 9).Value = tickerValue
+            Cells(iRow, 10).Value = yearClose - yearOpen
+            Cells(iRow, 10).NumberFormat = "0.000000000"
+            If (Cells(iRow, 10).Value >= 0) Then
+                Cells(iRow, 10).Interior.ColorIndex = 4
+            Else
+                Cells(iRow, 10).Interior.ColorIndex = 3
+            End If
+            
+            Cells(iRow, 11).NumberFormat = "0.00%"
+            If (yearOpen <> 0) Then
+                Cells(iRow, 11).Value = (yearClose - yearOpen) / yearOpen
+            Else
+                Cells(iRow, 11).Value = 0
+            End If
+            
+            Cells(iRow, 12).Value = totalVol
+            
+            ' Increment iRow for next ticker
+            iRow = iRow + 1
+            ' Reset values
+            yearOpen = Cells(i + 1, 3)
+            totalVol = 0
+        End If
+    Next i
+    
+End Sub

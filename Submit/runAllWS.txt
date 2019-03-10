@@ -1,0 +1,11 @@
+Sub runAllWS()
+    ' Declare and initialize wsCount
+    Dim wsCount As Integer
+    wsCount = ActiveWorkbook.Worksheets.Count
+    Dim actWS As Worksheet
+    
+    For i = 1 To wsCount
+        ActiveWorkbook.Worksheets(i).Activate
+        Call Hard
+    Next i
+End Sub
